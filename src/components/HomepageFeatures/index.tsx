@@ -14,8 +14,8 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Tinh Tinh was designed from the ground up to be easily installed and
+        used to get your api and running quickly.
       </>
     ),
   },
@@ -24,18 +24,18 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Tinh Tinh lets you focus on your application, and we&apos;ll do the chores. Go
+        ahead and move your app to Tinh Tinh.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Powered by Go',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Extend or customize your website layout by reusing Golang. Tinh Tinh can
+        be extended while reusing the same module.
       </>
     ),
   },
