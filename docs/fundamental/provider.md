@@ -4,6 +4,8 @@ sidebar_position: 4
 
 # Provider 
 
+A unit to store value use across module.
+
 ![provider](./img/provider.avif)
 
 Provider is a instance have declare in module. Two method to define a provider:

@@ -4,6 +4,8 @@ sidebar_position: 7
 
 # Guard
 
+A middleware responsible to manage access to controller.
+
 ![guard](./img/guard.png)
 
 Guard is a middleware only use for manage access in route. It is a function return bool value if true the route can be handler, else app will throw 403 error. Have two guard for each level. `Guard` for Controller and `AppGuard` for Module.
