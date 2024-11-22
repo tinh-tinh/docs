@@ -48,3 +48,22 @@ ctrl.Get("", func (ctx core.Ctx) error {
   // handler
 })
 ```
+
+In this case need save value in each request, use it
+
+## Set & Get
+
+```go
+const key core.CtxKey = "key"
+
+ctrl.Use(func (ctx core.Ctx) error {
+  ctx.Set(key, "value")
+  return ctx.Next()
+}).Post("", func (ctx core.Ctx) error {
+  return ctx.JSON(core.Map{
+    "data": ctx.Get(key),
+  })
+})
+```
+
+Method `Set(key string, val interface{})` will save value with key into request context of `net/http` and method `Get(key string)` will get value from key in context request.
