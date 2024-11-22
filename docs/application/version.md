@@ -12,7 +12,7 @@ There are 4 types of versioning that are supported:
 - Media Type
 - Custom
 
-## Common use
+## Common usage
 
 Enable versioning in app:
 
