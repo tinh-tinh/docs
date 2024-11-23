@@ -14,35 +14,9 @@ TinhTinh following modular architecture, with each module incluse components:
 - Providers: Instance with name only available in module have registered.
 - Middlewares: common middleware will apply for all controller in module.
 
-## Installation
+# Folder structure 
 
-First of all, download and install Go 1.22 or higher is required.
-
-Init your go module:
-
-```bash
-go mod init your-package
-```
-
-Installation is done use the go get command:
-
-```bash
-go get -u github.com/tinh-tinh/tinhtinh
-```
-
-Install cli to easy to init project. 
-
-```bash
-go install github.com/tinh-tinh/tinhtinh-cli@latest
-```
-
-After then 
-
-```bash
-tinhtinh-cli init
-```
-
-The structure folder will be in:
+After you init with tinhtinh-cli, the structure folder will be in:
 
 ```
 code

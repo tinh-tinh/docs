@@ -6,7 +6,7 @@ sidebar_position: 6
 
 A middleware responsible to validate and transform data before to comming controller.
 
-![pipe](./img/pipe.avif)
+![pipe](./img/pipe.png)
 
 Pipe is function validate and transform data request before handler function. Have 3 types pipe
 - **Body**: validate and transform data from request body
