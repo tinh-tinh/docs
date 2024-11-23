@@ -6,7 +6,7 @@ sidebar_position: 7
 
 A middleware responsible transform data after response
 
-![interceptor](./img/interceptor.avif)
+![interceptor](./img/interceptor.png)
 
 Interceptor is use for transform data after response in controller.
 

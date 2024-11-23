@@ -6,7 +6,7 @@ sidebar_position: 5
 
 A function for handle between request comming to controller.
 
-![middleware](./img/middleware.avif)
+![middleware](./img/middleware.png)
 
 A middleware is a function called before handler. A syntax to create middleware:
 

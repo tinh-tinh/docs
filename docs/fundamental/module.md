@@ -6,7 +6,7 @@ sidebar_position: 2
 
 A unit for handle business with handler and instance data.
 
-![image](./img/module.avif)
+![image](./img/module.png)
 
 Each application has a least one module, a **root module**. The root module is the starting point to build the application. Have a different in root module with sub module.
 
