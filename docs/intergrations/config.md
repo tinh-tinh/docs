@@ -1,4 +1,5 @@
 ---
+title: ⚙️ Config 
 sidebar_position: 1
 ---
 
