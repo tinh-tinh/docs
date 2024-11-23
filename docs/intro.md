@@ -47,4 +47,4 @@ After init, you can run go by common command:
 go run main.go
 ```
 
-The sever will be run on `**http://localhost:3000`, you can open browser and see it.
+The sever will be run on **`http://localhost:3000`**, you can open browser and see it.
