@@ -1,5 +1,5 @@
 ---
-title: 🛢 Queu
+title: 🛢 Queue
 sidebar_position: 6
 ---
 
