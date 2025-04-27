@@ -32,8 +32,8 @@ TinhTinh are supported 3 types for upload:
 
 ```go
 import (
-  "github.com/tinh-tinh/tinhtinh/core"
-  "github.com/tinh-tinh/tinhtinh/middleware/storage"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
+  "github.com/tinh-tinh/tinhtinh/v2/middleware/storage"
 )
 
 store := &storage.DiskOptions{

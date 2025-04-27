@@ -24,7 +24,7 @@ Use middleware in controller:
 ```go
 package app
 
-func Controller(module *core.DynamicModule) *core.DynamicController {
+func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("test")
   
   ctrl.Use(Middleware).Get("", func(ctx core.Ctx) error {
@@ -42,7 +42,7 @@ Use middleware for all route in controller:
 ```go
 package app
 
-func Controller(module *core.DynamicModule) *core.DynamicController {
+func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("test").Use(Middleware).Registry()
     
   ctrl.Get("", func(ctx core.Ctx) error {
@@ -60,7 +60,7 @@ Use middleware for module:
 ```go
 package app
 
-func Module(module *core.DynamicModule) *core.DynamicModule {
+func Module(module core.Module) core.Module {
   mod := module.New(core.NewModuleOptions{
     Middlewares: []core.Middleware{Middleware}
   })

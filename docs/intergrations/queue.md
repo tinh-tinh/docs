@@ -10,7 +10,7 @@ Package support create queue for handle task with Redis.
 ## Install
 
 ```bash
-go get -u github.com/tinh-tinh/queue
+go get -u github.com/tinh-tinh/queue/v2
 ```
 
 ## Usage
@@ -22,14 +22,14 @@ package user
 
 import (
 	"github.com/redis/go-redis/v9"
-	"github.com/tinh-tinh/mongoose"
-	"github.com/tinh-tinh/queue"
-	"github.com/tinh-tinh/tinhtinh/core"
+	"github.com/tinh-tinh/mongoose/v2"
+	"github.com/tinh-tinh/queue/v2"
+	"github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
-func NewModule(module *core.DynamicModule) *core.DynamicModule {
+func NewModule(module core.Module) core.Module {
   userModule := module.New(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       mongoose.ForFeature(
         mongoose.NewModel[User]("users"),
       ),
@@ -43,8 +43,8 @@ func NewModule(module *core.DynamicModule) *core.DynamicModule {
         RetryFailures: 3,
       }),
     },
-    Controllers: []core.Controller{NewController},
-    Providers:   []core.Provider{NewService},
+    Controllers: []core.Controllers{NewController},
+    Providers:   []core.Providers{NewService},
   })
 
   return userModule
@@ -60,7 +60,7 @@ type userService struct {
 	q *queue.Queue
 }
 
-func NewService(module *core.DynamicModule) *core.DynamicProvider {
+func NewService(module core.Module) core.Provider {
 	userQ := queue.Inject(module, "user_update")
 
 	userQ.Process(func(job *queue.Job) {

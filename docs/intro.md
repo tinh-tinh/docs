@@ -27,7 +27,7 @@ go mod init your-package
 Installation is done use the go get command:
 
 ```bash
-go get -u github.com/tinh-tinh/tinhtinh
+go get -u github.com/tinh-tinh/tinhtinh/v2
 ```
 
 Install cli to easy to init project. 

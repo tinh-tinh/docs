@@ -9,7 +9,7 @@ Package `logger` middleware to trace log and save it into file.
 ## Usage
 
 ```go
-import "github.com/tinh-tinh/tinhtinh/middleware/logger"
+import "github.com/tinh-tinh/tinhtinh/v2/middleware/logger"
 
 // Something
 app.Use(logger.Handler(logger.MiddlewareOptions{
