@@ -55,14 +55,14 @@ Example:
 
 ```go
 import (
-  "github.com/tinh-tinh/tinhtinh/common/exception"
-  "github.com/tinh-tinh/tinhtinh/core"
+	"github.com/tinh-tinh/tinhtinh/v2/common/exception"
+	"github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
 
 // something
 
 ctrl.Get("", func(ctx core.Ctx) error {
-  panic(exception.BadRequest("bad request"))
+  return exception.BadRequest("bad request")
 })
 ```

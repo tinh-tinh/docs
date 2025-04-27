@@ -10,7 +10,7 @@ Package support config environment with file yaml or env.
 ## Install
 
 ```bash
-go get -u github.com/tinh-tinh/config
+go get -u github.com/tinh-tinh/config/v2
 ```
 
 ## Usage
@@ -32,13 +32,13 @@ And add it when import `ConfigModule` (support file **.env**, **.yaml**):
 package app
 
 import (
-  "github.com/tinh-tinh/config"
-  "github.com/tinh-tinh/tinhtinh/core"
+  "github.com/tinh-tinh/config/v2"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
-func Module() *core.DynamicModule {
+func Module() core.Module {
   appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       config.ForRoot[Config](".env"),
     },
   })
@@ -53,15 +53,15 @@ And use it in service:
 package app
 
 import (
-  "github.com/tinh-tinh/config"
-  "github.com/tinh-tinh/tinhtinh/core"
+  "github.com/tinh-tinh/config/v2"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
 type AppName struct {
   Name string
 }
 
-func Service(module *core.DynamicModule) *core.DynamicProvider {
+func Service(module core.Module) core.Provider {
  cfg := config.Inject[Config](module)
  svc := module.NewProvider(core.ProviderOptions{
   Name: "svc",
@@ -101,9 +101,9 @@ func Load() *Config {
   }
 }
 
-func Module() *core.DynamicModule {
+func Module() core.Module {
   appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
 			config.ForRoot[Config](config.Options[Config]{
 				EnvPath: ".env",
 				Load:    Load,
@@ -133,9 +133,9 @@ And you can use it in two module. Example in MysqlModule:
 
 
 ```go
-func MySQLModule(module *core.DynamicModule) *core.DynamicModule {
+func MySQLModule(module core.Module) core.Module {
   mysql := module.New(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       config.ForFeature[Config]("mysql", func() *Config {
         return &Config{
           DBHost: os.Getenv("MYSQL_DBHOST"),
@@ -155,9 +155,9 @@ func MySQLModule(module *core.DynamicModule) *core.DynamicModule {
 And in `MongoModule`:
 
 ```go
-func MongoModule(module *core.DynamicModule) *core.DynamicModule {
+func MongoModule(module core.Module) core.Module {
   mongo := module.New(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       config.ForFeature("mongo", func() *Config {
         return &Config{
           DBHost: os.Getenv("MONGO_DBHOST"),
@@ -177,7 +177,7 @@ func MongoModule(module *core.DynamicModule) *core.DynamicModule {
 So when use `Config`, you can specific namespace to get value like:
 
 ```go
-func(module *core.DynamicModule) *core.DynamicProvider {
+func(module core.Module) core.Provider {
 	cfg := config.InjectNamespace[Config](module, "mongo")
   // Something
 }
@@ -193,13 +193,13 @@ package app
 import (
   "github.com/joho/godotenv"
   "github.com/tinh-tinh/config"
-  "github.com/tinh-tinh/tinhtinh/core"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
-func Module() *core.DynamicModule {
+func Module() core.Module {
   godotenv.Load(".env.example")
   appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       config.RegisterWhen(userModule, "NODE_ENV"),
     },
   })
@@ -220,13 +220,13 @@ import (
 
   "github.com/joho/godotenv"
   "github.com/tinh-tinh/config"
-  "github.com/tinh-tinh/tinhtinh/core"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
-func Module() *core.DynamicModule {
+func Module() core.Module {
   godotenv.Load(".env.example")
   appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       config.RegisterWhen(userModule, func() bool {
 				return os.Getenv("NODE_ENV") == "development"
 			}),

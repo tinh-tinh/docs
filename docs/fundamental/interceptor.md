@@ -11,7 +11,7 @@ A middleware responsible transform data after response
 Interceptor is use for transform data after response in controller.
 
 ```go
-func Transform(ctx *core.Ctx) core.CallHandler {
+func Transform(ctx core.Ctx) core.CallHandler {
 	fmt.Println("Before ...")
 	now := time.Now()
 	return func(data core.Map) core.Map {

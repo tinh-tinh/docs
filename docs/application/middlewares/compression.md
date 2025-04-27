@@ -9,7 +9,7 @@ You can use `compression` middleware, to optimze performance data transport.
 ## Usage 
 
 ```go
-import	"github.com/tinh-tinh/tinhtinh/middleware/compression"
+import	"github.com/tinh-tinh/tinhtinh/v2/middleware/compression"
 
 // Something
 app.Use(compression.Handler())

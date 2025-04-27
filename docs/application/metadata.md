@@ -27,7 +27,7 @@ ctrl.Metadata(Roles("admin")).Get("", func(ctx core.Ctx) error {
 In this case we need get metadata of route path when have request comming to handler. So we use `ctx.GetMetadata()` to get it.
 
 ```go
-func RoleGuard(ctrl *core.DynamicController, ctx *core.Ctx) bool {
+func RoleGuard(ref core.RefProvider, ctx core.Ctx) bool {
   roles, ok := ctx.GetMetadata(role_key).([]string)
   if !ok || len(roles) == 0 {
     return true

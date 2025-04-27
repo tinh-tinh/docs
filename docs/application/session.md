@@ -10,8 +10,8 @@ Enable session in create App
 
 ```go
 import (
-  "github.com/tinh-tinh/tinhtinh/core"
-  "github.com/tinh-tinh/tinhtinh/middleware/session"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
+  "github.com/tinh-tinh/tinhtinh/v2/middleware/session"
 )
 
 session := session.New(session.Options{

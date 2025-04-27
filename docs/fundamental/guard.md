@@ -15,13 +15,13 @@ Guard is a middleware only use for manage access in route. It is a function retu
 ```go
 package app
 
-import "github.com/tinh-tinh/tinhtinh/core"
+import "github.com/tinh-tinh/tinhtinh/v2/core"
 
-func QueryGuard(ctrl *DynamicController, ctx *Ctx) bool {
+func QueryGuard(ref core.RefProvider, ctx core.Ctx) bool {
   return ctx.Query("key") == "value"
 }
 
-func Controller(module *core.DynamicModule) *core.DynamicController {
+func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("test")
   
   ctrl.Guard(QueryGuard).Get("", func (ctx core.Ctx) error {
@@ -39,15 +39,15 @@ func Controller(module *core.DynamicModule) *core.DynamicController {
 ```go
 package app
 
-import "github.com/tinh-tinh/tinhtinh/core"
+import "github.com/tinh-tinh/tinhtinh/v2/core"
 
-func QueryGuard(module *core.DynamicModule, ctx *Ctx) bool {
+func QueryGuard(ref RefProvider, ctx Ctx) bool {
   return ctx.Query("key") == "value"
 }
 
-func Controller(module *core.DynamicModule) *core.DynamicModule {
+func Controller(module core.Module) core.Module {
   mod := module.New(core.NewModuleOptions{
-    Guards: []core.AppGuard{QueryGuard},
+    Guards: []core.Guard{QueryGuard},
   })
   
   return mod

@@ -15,7 +15,7 @@ Function support cookie in Ctx Handler.
 
 ```go
 ctrl.Get("", func (ctx core.Ctx) error {
-  cookie := ctx.Cookie("key)
+  cookie := ctx.Cookie("key")
 })
 ```
 
@@ -37,8 +37,8 @@ Defined secret key in app
 
 ```go
 import (
-  "github.com/tinh-tinh/tinhtinh/core"
-  "github.com/tinh-tinh/tinhtinh/middleware/cookie"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
+  "github.com/tinh-tinh/tinhtinh/v2/middleware/cookie"
 )
 
 func main() {

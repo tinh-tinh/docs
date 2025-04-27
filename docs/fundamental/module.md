@@ -15,12 +15,14 @@ Syntax for create root module in Tinh Tinh:
 ```go
 package app
 
-import "github.com/tinh-tinh/tinhtinh/core"
+import (
+	"github.com/tinh-tinh/tinhtinh/v2/core"
+)
 
-func Module() *core.DynamicModule {
-  module := core.NewModule(core.NewModuleOptions{})
-  
-  return module
+func NewModule() core.Module {
+	appModule := core.NewModule(core.NewModuleOptions{})
+
+	return appModule
 }
 ```
 
@@ -29,12 +31,12 @@ Create child module:
 ```go
 package sub
 
-import "github.com/tinh-tinh/tinhtinh/core"
+import "github.com/tinh-tinh/tinhtinh/v2/core"
 
-func Module(module *core.DynamicModule) *core.DynamicModule {
-  subModule := module.New(core.NewModuleOptions{})
-  
-  return subModule 
+func NewModule(module core.Module) core.Module {
+	subModule := module.New(core.NewModuleOptions{})
+
+	return subModule
 }
 ```
 
@@ -42,7 +44,7 @@ Although have different syntax for create root module and sub module, but it wil
 
 Options among:
 - **Scope**: Have two type scopes, Global and Request.
-- **Imports**: Array of function will return value as `DynamicModule`
-- **Controllers**: Array of function will return value as `DynamicController`
-- **Providers**: Array of function will return value as `DynamicProvider`
-- **Exports**: Array of function will return value as `DynamicProvider`
+- **Imports**: Array of function will return value as `Modules`
+- **Controllers**: Array of function will return value as `Controllers`
+- **Providers**: Array of function will return value as `Providers`
+- **Exports**: Array of function will return value as `Providers`

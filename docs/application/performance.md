@@ -15,7 +15,7 @@ And pass it when create app:
 
 ```go
 import (
-  "github.com/tinh-tinh/tinhtinh/core"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
   "github.com/goccy/go-json"
 )
 

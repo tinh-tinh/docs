@@ -19,7 +19,7 @@ Register module `fetch` in app module:
 
 ```go
 appModule := core.NewModule(core.NewModuleOptions{
-  Imports: []core.Module{
+  Imports: []core.Modules{
     fetch.Register(&fetch.Config{
       BaseUrl: "https://example.com",
     }),
@@ -30,7 +30,7 @@ appModule := core.NewModule(core.NewModuleOptions{
 Use in module:
 
 ```go
-func Controller(module *core.DynamicModule) *core.DynamicController {
+func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("posts")
   httpFetch := fetch.Inject(module)
 

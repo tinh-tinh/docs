@@ -10,7 +10,7 @@ Package support create swagger base on Restful App.
 ## Install 
 
 ```bash
-go get -u github.com/tinh-tinh/swagger
+go get -u github.com/tinh-tinh/swagger/v2
 ```
 
 ## Usage
@@ -21,8 +21,8 @@ package main
 import (
   "social-network/app"
 
-  "github.com/tinh-tinh/tinhtinh/core"
-  "github.com/tinh-tinh/swagger"
+  "github.com/tinh-tinh/tinhtinh/v2/core"
+  "github.com/tinh-tinh/swagger/v2"
 )
 
 func main() {
@@ -55,8 +55,8 @@ package main
 import (
 	"social-network/app"
 
-	"github.com/tinh-tinh/swagger"
-	"github.com/tinh-tinh/tinhtinh/core"
+  "github.com/tinh-tinh/swagger/v2"
+	"github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
 func main() {

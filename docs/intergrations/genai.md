@@ -10,15 +10,15 @@ Package support interactive with AI Model
 ## Install
 
 ```bash
-go get -u github.com/tinh-tinh/genai
+go get -u github.com/tinh-tinh/genai/v2
 ```
 
 ## Usage
 
 ```go
-func Module() *core.DynamicModule {
+func Module() core.Module {
   appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       ai.ForRoot(option.WithAPIKey(os.Getenv("API_KEY"))),
     },
   })
@@ -30,12 +30,12 @@ func Module() *core.DynamicModule {
 When use `ForRoot` you init a AI Client, if you want to action you need specific AI Model.
 
 ```go
-func UserModule(module *core.DynamicModule) *core.DynamicModule {
+func UserModule(module core.Module) core.Module {
   return module.New(core.NewModuleOptions{
-    Imports: []core.Module{
+    Imports: []core.Modules{
       ai.ForFeature("gemini-1.5-flash"),
     },
-    Controllers: []core.Controller{
+    Controllers: []core.Controllers{
       userController,
     },
   })
@@ -45,7 +45,7 @@ func UserModule(module *core.DynamicModule) *core.DynamicModule {
 In this case we use AI model "gemini-1.5-flash", and this is way to use it in module:
 
 ```go
- func Controller(module *core.DynamicModule) *core.DynamicController {
+ func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("users")
 
   ctrl.Get("", func(ctx core.Ctx) error {
