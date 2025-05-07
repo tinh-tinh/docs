@@ -24,6 +24,8 @@ Use middleware in controller:
 ```go
 package app
 
+import "github.com/tinh-tinh/tinhtinh/v2/core"
+
 func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("test")
   
@@ -42,6 +44,8 @@ Use middleware for all route in controller:
 ```go
 package app
 
+import "github.com/tinh-tinh/tinhtinh/v2/core"
+
 func Controller(module core.Module) core.Controller {
   ctrl := module.NewController("test").Use(Middleware).Registry()
     
@@ -59,6 +63,8 @@ Use middleware for module:
 
 ```go
 package app
+
+import "github.com/tinh-tinh/tinhtinh/v2/core"
 
 func Module(module core.Module) core.Module {
   mod := module.New(core.NewModuleOptions{

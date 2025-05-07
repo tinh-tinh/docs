@@ -15,9 +15,7 @@ Syntax for create root module in Tinh Tinh:
 ```go
 package app
 
-import (
-	"github.com/tinh-tinh/tinhtinh/v2/core"
-)
+import "github.com/tinh-tinh/tinhtinh/v2/core"
 
 func NewModule() core.Module {
 	appModule := core.NewModule(core.NewModuleOptions{})

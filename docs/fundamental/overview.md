@@ -38,3 +38,21 @@ Here's a brief overview of those core files:
 - `app_module.go`: The root module of the application.
 
 - `main.go`: the entry file of the application which uses the core function `CreateFactory` to create a application instance.
+
+File main is like this:
+
+```go
+package main
+
+import (
+	"project_name/app"
+
+	"github.com/tinh-tinh/tinhtinh/v2/core"
+)
+
+func main() {
+	server := core.CreateFactory(app.NewModule)
+
+	server.Listen(3000)
+}
+```
