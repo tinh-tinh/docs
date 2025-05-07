@@ -6,7 +6,7 @@ sidebar_position: 1
 
 Tinh Tinh is a framework for building efficient scalable Golang server side applications. It is a [Nest](https://docs.nestjs.com) expired web framework built on top of net/http for Go. Designed to ease things up for fast development with zero memory allocation and performance in mind.
 
-These docs for Tinh Tinh, which was released on September 15th, 2024.
+These docs for Tinh Tinh, which was released on May 7, 2025.
 
 ## Philosophy
 
@@ -18,28 +18,16 @@ Tinh Tinh providers an out-of-the-box application architecture which allows deve
 
 First of all, download and install Go 1.22 or higher is required.
 
-Init your go module:
-
-```bash
-go mod init your-package
-```
-
-Installation is done use the go get command:
-
-```bash
-go get -u github.com/tinh-tinh/tinhtinh/v2
-```
-
 Install cli to easy to init project. 
 
 ```bash
-go install github.com/tinh-tinh/tinhtinh-cli@latest
+go install github.com/tinh-tinh/tinhtinh-cli/v2@latest
 ```
 
 After then 
 
 ```bash
-tinhtinh-cli init
+tinhtinh-cli init project_name
 ```
 
 After init, you can run go by common command:
