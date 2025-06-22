@@ -62,11 +62,11 @@ type AppName struct {
 }
 
 func Service(module core.Module) core.Provider {
- cfg := config.Inject[Config](module)
- svc := module.NewProvider(core.ProviderOptions{
-  Name: "svc",
-  Value: &AppName{Name: cfg.NodeEnv}
- })
+  cfg := config.Inject[Config](module)
+  svc := module.NewProvider(core.ProviderOptions{
+    Name: "svc",
+    Value: &AppName{Name: cfg.NodeEnv}
+  })
 
   return svc
 }
@@ -104,10 +104,10 @@ func Load() *Config {
 func Module() core.Module {
   appModule := core.NewModule(core.NewModuleOptions{
     Imports: []core.Modules{
-			config.ForRoot[Config](config.Options[Config]{
-				EnvPath: ".env",
-				Load:    Load,
-			}),
+      config.ForRoot[Config](config.Options[Config]{
+        EnvPath: ".env",
+        Load:    Load,
+      }),
     },
   })
 
@@ -228,8 +228,8 @@ func Module() core.Module {
   appModule := core.NewModule(core.NewModuleOptions{
     Imports: []core.Modules{
       config.RegisterWhen(userModule, func() bool {
-				return os.Getenv("NODE_ENV") == "development"
-			}),
+        return os.Getenv("NODE_ENV") == "development"
+      }),
     },
   })
 

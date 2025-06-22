@@ -16,7 +16,7 @@ TinhTinh following modular architecture, with each module incluse components:
 
 # Folder structure 
 
-After you init with tinhtinh-cli, the structure folder will be in:
+After you init with **tinhtinh-cli**, the structure folder will be in:
 
 ```
 code

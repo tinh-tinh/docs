@@ -19,6 +19,25 @@ package user
 
 import "github.com/tinh-tinh/tinhtinh/v2/core"
 
+type UserService struct {
+  Name string
+}
+
+func NewService(module core.Module) core.Provider {
+	svc := module.NewProvider(&UserService{})
+
+	return svc
+}
+```
+
+By default, the provider will get struct name to identity in module, if you need specific name for value, you can create provider like this:
+
+```go
+// Define with value
+package user
+
+import "github.com/tinh-tinh/tinhtinh/v2/core"
+
 const USER_SERVICE core.Provide = "user_service"
 
 type UserService struct {
@@ -78,5 +97,25 @@ func AuthService(module core.Module) core.Provider {
   })
   
   return provider
+}
+```
+
+## Get value of provider in module
+
+After create provider, you can get it anywhere in module by syntax:
+
+```go
+func (module core.Module) {
+  prd := module.Ref(Name) // name of provider
+}
+```
+
+Or, if you create provider with name
+
+```go
+import "github.com/tinh-tinh/tinhtinh/v2/core"
+
+func (module core.Module) {
+  prd := core.Inject[StructService](module) // struct of provider
 }
 ```
