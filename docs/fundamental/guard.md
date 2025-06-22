@@ -4,13 +4,13 @@ sidebar_position: 7
 
 # Guard
 
-A middleware responsible to manage access to controller.
+A middleware responsible for managing access to the controller.
 
 ![guard](./img/guard.png)
 
-Guard is a middleware only use for manage access in route. It is a function return bool value if true the route can be handler, else app will throw 403 error. Have two guard for each level. `Guard` for Controller and `AppGuard` for Module.
+A guard is a middleware used only to manage access in routes. It is a function that returns a boolean value: if true, the route can be handled; otherwise, the app will throw a 403 error. 
 
-## Define guard and use in controller
+## Define a guard
 
 ```go
 package app
@@ -33,9 +33,7 @@ func Controller(module core.Module) core.Controller {
   return ctrl
 }
 ```
-
-## Define guard and use in module
-
+- Module
 ```go
 package app
 

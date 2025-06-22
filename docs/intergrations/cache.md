@@ -4,4 +4,4 @@ sidebar_position: 5
 
 # Cache Manager
 
-Package support caching data with multi data store.
+This package supports caching data with multiple data stores.

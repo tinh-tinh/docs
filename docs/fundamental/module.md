@@ -4,13 +4,13 @@ sidebar_position: 2
 
 # Module
 
-A unit for handle business with handler and instance data.
+A unit for handling business logic with handler and instance data.
 
 ![image](./img/module.png)
 
-Each application has a least one module, a **root module**. The root module is the starting point to build the application. Have a different in root module with sub module.
+Each application has at least one module: the **root module**. The root module is the starting point for building the application. There is a difference between the root module and submodules.
 
-Syntax for create root module in Tinh Tinh:
+Syntax to create a root module in Tinh Tinh:
 
 ```go
 package app
@@ -24,7 +24,7 @@ func NewModule() core.Module {
 }
 ```
 
-Create child module:
+Create a child module:
 
 ```go
 package sub
@@ -38,11 +38,11 @@ func NewModule(module core.Module) core.Module {
 }
 ```
 
-Although have different syntax for create root module and sub module, but it will receive same options.
+Although there is a different syntax for creating the root module and submodules, they receive the same options.
 
-Options among:
-- **Scope**: Have two type scopes, Global and Request.
-- **Imports**: Array of function will return value as `Modules`
-- **Controllers**: Array of function will return value as `Controllers`
-- **Providers**: Array of function will return value as `Providers`
-- **Exports**: Array of function will return value as `Providers`
+Options include:
+- **Scope**: There are two types of scopes, Global and Request.
+- **Imports**: Array of functions that return values as `Modules`
+- **Controllers**: Array of functions that return values as `Controllers`
+- **Providers**: Array of functions that return values as `Providers`
+- **Exports**: Array of functions that return values as `Providers`

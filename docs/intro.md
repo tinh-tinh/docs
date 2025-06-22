@@ -2,37 +2,37 @@
 sidebar_position: 1
 ---
 
-# Introduce
+# Introduction
 
-Tinh Tinh is a framework for building efficient scalable Golang server side applications. It is a [Nest](https://docs.nestjs.com) expired web framework built on top of net/http for Go. Designed to ease things up for fast development with zero memory allocation and performance in mind.
+Tinh Tinh is a framework for building efficient, scalable Golang server-side applications. It is a [Nest](https://docs.nestjs.com)-inspired web framework built on top of net/http for Go. Designed to facilitate fast development with zero memory allocation and performance in mind.
 
-These docs for Tinh Tinh, which was released on May 7, 2025.
+These are the docs for Tinh Tinh, which was released on May 7, 2025.
 
 ## Philosophy
 
-In recent years, so have many Go framework release, but plenty of super libraries, helpers, and tools exist for Go, none of them effectively solve the main problem of - Architecture.
+In recent years, many Go frameworks have been released. While there are plenty of excellent libraries, helpers, and tools for Go, none of them effectively solve the main problem: architecture.
 
-Tinh Tinh providers an out-of-the-box application architecture which allows developers and teams to create highly testable, scalable, loosely coupled and easily maintainable applications. The architecture is heavily inspired by Nest.
+Tinh Tinh provides an out-of-the-box application architecture that allows developers and teams to create highly testable, scalable, loosely coupled, and easily maintainable applications. The architecture is heavily inspired by Nest.
 
 ## Installation
 
-First of all, download and install Go 1.22 or higher is required.
+First, download and install Go 1.22 or higher.
 
-Install cli to easy to init project. 
+Install the CLI to easily initialize a project:
 
 ```bash
 go install github.com/tinh-tinh/tinhtinh-cli/v2@latest
 ```
 
-After then 
+After installing, initialize your project:
 
 ```bash
 tinhtinh-cli init project_name
 ```
 
-After init, you can run go by common command:
+After initialization, you can run your project with the following command:
 ```bash
 go run main.go
 ```
 
-The sever will be run on **`http://localhost:3000`**, you can open browser and see it.
+The server will run on **`http://localhost:3000`**. Open your browser to see it.

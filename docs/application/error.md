@@ -4,9 +4,9 @@ sidebar_position: 6
 
 # Error Handler
 
-Custom your error handler function you expected.
+Customize your error handler function as you expect.
 
-In default, TinhTinh support default error handler to catch event when `panic` to prevent crash app. And you can custom this function to get response you expected, by pass you function when create app.
+By default, Tinh Tinh supports a default error handler to catch events when `panic` occurs, preventing the app from crashing. You can customize this function to get the response you expect by passing your function when creating the app.
 
 ```go
 app := core.CreateFactory(module, core.AppOptions{
@@ -16,20 +16,20 @@ app := core.CreateFactory(module, core.AppOptions{
 })
 ```
 
-With default, the response you receive will be like:
+By default, the response you receive will look like:
 
 ```json
 {
   "statusCode": 500,
   "error": "Error Message",
   "timestamp": "2024-11-23T14:24:06+07:00",
-  "path": "/api/users",
+  "path": "/api/users"
 }
 ```
 
 ## Built-in HttpError
 
-Tinh Tinh support some function for you panic error with response with http statusCode.
+Tinh Tinh supports some functions for you to panic with an HTTP response status code:
 - BadRequest
 - Unauthorized
 - NotFound
@@ -58,7 +58,6 @@ import (
 	"github.com/tinh-tinh/tinhtinh/v2/common/exception"
 	"github.com/tinh-tinh/tinhtinh/v2/core"
 )
-
 
 // something
 

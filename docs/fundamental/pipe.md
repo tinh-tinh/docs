@@ -4,19 +4,19 @@ sidebar_position: 6
 
 # Pipe
 
-A middleware responsible to validate and transform data before to comming controller.
+A middleware responsible for validating and transforming data before it reaches the controller.
 
 ![pipe](./img/pipe.png)
 
-Pipe is function validate and transform data request before handler function. Have 3 types pipe
-- **Body**: validate and transform data from request body
-- **Query**: validate and transform data from request query
-- **Param**: validate and transform data from request params.
+A pipe is a function that validates and transforms request data before the handler function. There are 3 types of pipes:
+- **Body**: Validates and transforms data from the request body
+- **Query**: Validates and transforms data from the request query
+- **Param**: Validates and transforms data from the request params
 
 ## Body
 
 ```go
-// Define dto
+// Define DTO
 
 type SignUpDto struct {
   Name     string `validate:"required"`
@@ -26,7 +26,7 @@ type SignUpDto struct {
 }
 ```
 
-Use in controller
+Use in controller:
 
 ```go
 package app
@@ -48,7 +48,7 @@ func Controller(module core.Module) core.Controller {
 
 ## Query
 
-Define dto for query
+Define DTO for query:
 
 ```go
 package app
@@ -76,7 +76,7 @@ func Controller(module core.Module) core.Controller {
 
 ## Param
 
-Define dto for param
+Define DTO for param:
 
 ```go
 package app

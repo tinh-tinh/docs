@@ -5,7 +5,7 @@ sidebar_position: 10
 
 # Gen AI
 
-Package support interactive with AI Model
+This package supports interacting with AI models.
 
 ## Install
 
@@ -27,7 +27,7 @@ func Module() core.Module {
 }
 ```
 
-When use `ForRoot` you init a AI Client, if you want to action you need specific AI Model.
+When you use `ForRoot`, you initialize an AI client. If you want to perform actions, you need to specify an AI model.
 
 ```go
 func UserModule(module core.Module) core.Module {
@@ -42,7 +42,7 @@ func UserModule(module core.Module) core.Module {
 }
 ```
 
-In this case we use AI model "gemini-1.5-flash", and this is way to use it in module:
+In this case, we use the AI model "gemini-1.5-flash", and this is how to use it in a module:
 
 ```go
  func Controller(module core.Module) core.Controller {

@@ -4,14 +4,14 @@ sidebar_position: 7
 
 # Performance
 
-Use another lib to improve performance of app.
+Use another library to improve the app's performance.
 
-By default, TinhTinh use `encoding/json` lib of Go to decode and encoder data to transport. But you can use another lib to improve performance like:
+By default, Tinh Tinh uses Go's `encoding/json` library to decode and encode data for transport. However, you can use another library to improve performance, such as:
 
 - [goccy/go-json](https://github.com/goccy/go-json)
 - [bytedance/sonic](https://github.com/bytedance/sonic)
 
-And pass it when create app:
+And pass it when creating the app:
 
 ```go
 import (

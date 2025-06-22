@@ -6,12 +6,11 @@ sidebar_position: 3
 
 A cookie is a small piece of data a server sends to a user's web browser. 
 
-Function support cookie in Ctx Handler.
-
+Functions supporting cookies are available in the Ctx Handler.
 
 ## Cookies
 
-`Cookies(key string)` is use to get cookie by key from ctx.
+`Cookies(key string)` is used to get a cookie by key from ctx.
 
 ```go
 ctrl.Get("", func (ctx core.Ctx) error {
@@ -21,7 +20,7 @@ ctrl.Get("", func (ctx core.Ctx) error {
 
 ## Set Cookies
 
-`SetCookie(key string, value string, maxAge int)` use to set a cookie with value and max age in to ctx.
+`SetCookie(key string, value string, maxAge int)` is used to set a cookie with a value and max age in ctx.
 
 ```go
 ctrl.Get("", func (ctx core.Ctx) error {
@@ -31,9 +30,9 @@ ctrl.Get("", func (ctx core.Ctx) error {
 
 ## SignedCookie
 
-`SignedCookie(key string, val ...string)` use to set cookie with encrypt data. 
+`SignedCookie(key string, val ...string)` is used to set a cookie with encrypted data. 
 
-Defined secret key in app
+Define the secret key in the app:
 
 ```go
 import (
@@ -73,4 +72,3 @@ ctrl.Get("", func(ctx core.Ctx) error {
   })
 })
 ```
-
