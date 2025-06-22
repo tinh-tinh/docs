@@ -3,132 +3,134 @@ title: 🔔 Pubsub
 sidebar_position: 7
 ---
 
-# Pubsub
+# PubSub for Tinh Tinh
 
-Package support create and listen event in scope app.
+PubSub is a modular, in-memory publish/subscribe (pubsub) system for the Tinh Tinh framework. It enables decoupled communication between different parts of your application using topics and message subscribers.
 
-## Install
+---
+
+## Features
+
+- **Central Broker:** Manages topics and subscribers.
+- **Dynamic Subscribers:** Subscribe to one or many topics dynamically.
+- **Asynchronous Messaging:** Message delivery is non-blocking.
+- **Topic Patterns:** Supports wildcards and topic delimiters for pattern-based subscriptions.
+- **Broadcast Support:** Broadcast a message to all subscribers.
+- **Integration with Tinh Tinh Modules:** Use dependency injection for broker and subscribers.
+- **Subscriber Limits:** Optionally limit the max number of subscribers.
+- **Handler Utility:** Simplifies listening to topics with concise functions and is the recommended way to consume messages.
+
+---
+
+## Installation
 
 ```bash
 go get -u github.com/tinh-tinh/pubsub/v2
 ```
 
-## Usage 
+---
 
-Import `ForRoot` as a global module in app:
+## Basic Usage
+
+### 1. Register the Broker
 
 ```go
-package app
+import "github.com/tinh-tinh/pubsub/v2"
 
+pubsubModule := pubsub.ForRoot(pubsub.BrokerOptions{
+    // Optional: MaxSubscribers, Wildcard, Delimiter, etc.
+})
+```
+
+### 2. Register Subscribers (Feature Modules)
+
+Subscribe to specific topics:
+
+```go
+priceSubModule := pubsub.ForFeature("BTC", "ETH") // subscribe to multiple topics
+```
+
+### 3. Use Handler for Consumption (Recommended)
+
+**Instead of using `subscriber.GetMessages()` or `Listener`, use the Handler utility for subscribing to topics and consuming messages.**
+
+```go
 import (
-  "social-network/app/user"
-
-  "github.com/tinh-tinh/mongoose/v2"
-  "github.com/tinh-tinh/pubsub/v2"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
+    "github.com/tinh-tinh/pubsub/v2"
+    "github.com/tinh-tinh/tinhtinh/v2/core"
 )
 
-func NewModule() core.Module {
-  appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Modules{
-      mongoose.ForRoot("mongodb://localhost:27017", "db"),
-      pubsub.ForRoot(),
-      user.NewModule,
-    },
-    Controllers: []core.Controllers{NewController},
-    Providers:   []core.Providers{NewService},
-  })
+type PriceService struct {
+    Message interface{}
+}
 
-  return appModule
+priceService := func(module core.Module) core.Provider {
+    return module.NewProvider(core.ProviderOptions{
+        Name:  "PriceService",
+        Value: &PriceService{},
+    })
+}
+
+priceHandler := func(module core.Module) core.Provider {
+    handler := pubsub.NewHandler(module)
+    priceService := module.Ref("PriceService").(*PriceService)
+
+    handler.Listen(func(msg *pubsub.Message) {
+        priceService.Message = msg.GetContent()
+    }, "BTC", "ETH", "SOL")
+
+    return handler
 }
 ```
 
-Register channel want to subscribe:
+### 4. Use in Controllers
 
 ```go
-package user
+controller := func(module core.Module) core.Controller {
+    ctrl := module.NewController("prices")
 
-import (
-  "github.com/tinh-tinh/mongoose/v2"
-  "github.com/tinh-tinh/pubsub/v2"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
+    ctrl.Post("", func(ctx core.Ctx) error {
+        broker := pubsub.InjectBroker(module)
+        go broker.Publish("BTC", "hihi")
+        return ctx.JSON(core.Map{"data": "ok"})
+    })
 
-func NewModule(module core.Module) core.Module {
-  userModule := module.New(core.NewModuleOptions{
-    Imports: []core.Modules{
-      mongoose.ForFeature(
-        mongoose.NewModel[User]("users"),
-      ),
-      pubsub.ForFeature("USER"),
-    },
-    Controllers: []core.Controllers{NewController},
-    Providers:   []core.Providers{NewService},
-  })
+    ctrl.Get("", func(ctx core.Ctx) error {
+        service := module.Ref("PriceService").(*PriceService)
+        return ctx.JSON(core.Map{"data": service.Message})
+    })
 
-  return userModule
+    return ctrl
 }
 ```
 
-In above example, we have register subscribe with channel `"USER"`, and they way to get data from this channel:
+---
+
+## Advanced Features
+
+### Broker Options
+
+- `MaxSubscribers`: Limit the maximum number of subscribers.
+- `Wildcard` and `Delimiter`: Enable pattern matching for topics (e.g., `"orders.*"` with `"."` as delimiter).
+
+### Handler
+
+- The Handler manages subscription and message handling in a background goroutine.
+- You can listen to multiple topics in one handler.
+
+---
+
+## Examples
+
+**Handler Usage:**
 
 ```go
-package user
-
-import (
-  "github.com/tinh-tinh/pubsub/v2"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
-
-const USER_SERVICE core.Provide = "USER_SERVICE"
-
-type userService struct {
-	Data interface{}
-}
-
-func NewService(module core.Module) core.Provider {
-  svc := module.NewProvider(core.ProviderOptions{
-    Name: USER_SERVICE,
-    Factory: pubsub.Listener(module, func(s *pubsub.Subscriber) interface{} {
-      userSvc := &userService{}
-      go (func() {
-        msg, ok := <-s.GetMessages()
-        if ok {
-          userSvc.Data = msg.GetContent()
-        }
-      })()
-
-      return userSvc
-    }),
-  })
-
-  return svc
-}
+handler := pubsub.NewHandler(module)
+handler.Listen(func(msg *pubsub.Message) {
+    fmt.Println("Received:", msg.GetContent())
+}, "BTC", "ETH")
 ```
 
-And that is how to send data to it channel
+---
 
-```go
-package user
-
-import (
-  "social-network/app/user/dto"
-
-  "github.com/tinh-tinh/pubsub/v2"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
-
-func NewController(module core.Module) core.Controller {
-  ctrl := module.NewController("user").Registry()
-
-  svc := module.Ref(USER_SERVICE).(*userService)
-  ctrl.Pipe(core.Body(&dto.CreateUser{})).Post("/", func(ctx core.Ctx) error {
-    broker := pubsub.InjectBroker(module)
-    go broker.Publish("USER", "data")
-    svc.Create(ctx.Body())
-    return ctx.JSON(core.Map{"data": "ok"})
-  })
-
-  return ctrl
-}
-```
+For more advanced patterns and full API, see the [pubsub source code](https://github.com/tinh-tinh/pubsub).

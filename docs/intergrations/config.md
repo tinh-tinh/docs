@@ -3,236 +3,185 @@ title: ⚙️ Config
 sidebar_position: 1
 ---
 
-# Config
+# Config Module for Tinh Tinh
 
-Package support config environment with file yaml or env.
+The Config module for the Tinh Tinh framework provides flexible configuration management for Go applications. It supports loading environment variables from `.env` files and struct-based configs from YAML, with first-class integration for dependency injection and modular apps.
 
-## Install
+---
+
+## Features
+
+- Load configuration from `.env`, `.yaml`, or `.yml` files
+- Strongly-typed config structs with tags for mapping, default values, and validation
+- Namespace-based config injection for multiple configs (e.g., database, cache)
+- Conditional module registration based on environment or custom logic
+- Supports default values and validation via struct tags
+- Seamless integration with Tinh Tinh modules and controllers
+
+---
+
+## Installation
 
 ```bash
 go get -u github.com/tinh-tinh/config/v2
 ```
 
-## Usage
+---
 
-Declare type struct with key `mapstructure`:
+## Quick Start
+
+### 1. Basic Usage with `.env`
+
+```go
+import "github.com/tinh-tinh/config/v2"
+
+type AppConfig struct {
+    NodeEnv   string        `mapstructure:"NODE_ENV"`
+    Port      int           `mapstructure:"PORT"`
+    ExpiresIn time.Duration `mapstructure:"EXPIRES_IN"`
+    Log       bool          `mapstructure:"LOG"`
+    Secret    string        `mapstructure:"SECRET"`
+}
+
+cfg, err := config.NewEnv[AppConfig](".env")
+if err != nil {
+    panic(err)
+}
+fmt.Println(cfg.Port)
+```
+
+### 2. Using with YAML
+
+```go
+type YamlConfig struct {
+    Host string `yaml:"host"`
+    Port int    `yaml:"port"`
+}
+
+cfg, err := config.NewYaml[YamlConfig]("config.yaml")
+if err != nil {
+    panic(err)
+}
+fmt.Println(cfg.Host)
+```
+
+---
+
+## Tinh Tinh Module Integration
+
+### Register as a Global Config
+
+```go
+import "github.com/tinh-tinh/tinhtinh/v2/core"
+
+appModule := core.NewModule(core.NewModuleOptions{
+    Imports: []core.Modules{
+        config.ForRoot[AppConfig](".env"),
+    },
+})
+```
+
+### Inject Config Anywhere
+
+```go
+cfg := config.Inject[AppConfig](module)
+fmt.Println(cfg.Port)
+```
+
+---
+
+## Namespaced Configs (Multiple Sources)
+
+```go
+type MysqlConfig struct {
+    DBHost string `mapstructure:"MYSQL_DBHOST"`
+    DBPort string `mapstructure:"MYSQL_DBPORT"`
+}
+
+type MongoConfig struct {
+    DBHost string `mapstructure:"MONGO_DBHOST"`
+    DBPort string `mapstructure:"MONGO_DBPORT"`
+}
+
+// Register namespaced configs
+appModule := core.NewModule(core.NewModuleOptions{
+    Imports: []core.Modules{
+        config.ForFeature[MysqlConfig]("mysql"),
+        config.ForFeature("mongo", func() *MongoConfig {
+            return &MongoConfig{
+                DBHost: os.Getenv("MONGO_DBHOST"),
+                DBPort: os.Getenv("MONGO_DBPORT"),
+            }
+        }),
+    },
+})
+
+// Usage in controller/service
+mysqlCfg := config.InjectNamespace[MysqlConfig](module, "mysql")
+mongoCfg := config.InjectNamespace[MongoConfig](module, "mongo")
+```
+
+---
+
+## Conditional Module Registration
+
+```go
+import "os"
+
+// Register module only if an env var is set
+mod := config.RegisterWhen(config.ForRoot[AppConfig](".env"), "NODE_ENV")
+
+// Or by custom function
+mod = config.RegisterWhen(config.ForRoot[AppConfig](".env"), func() bool {
+    return os.Getenv("ENABLE_FEATURE") == "true"
+})
+```
+
+---
+
+## Struct Tag Reference
+
+- `mapstructure:"ENV_VAR"` — maps struct field to environment variable
+- `default:"value"` — sets default value if env is missing
+- `validate:"..."` — supports validation (e.g. `required`, `isEmail`)
+- `yaml:"key"` — for YAML files
+
+Example:
 
 ```go
 type Config struct {
-	NodeEnv   string        `mapstructure:"NODE_ENV"`
-	Port      int           `mapstructure:"PORT"`
-	ExpiresIn time.Duration `mapstructure:"EXPIRES_IN"`
-	Secret    string        `mapstructure:"SECRET"`
+    NodeEnv string `mapstructure:"NODE_ENV" default:"production"`
 }
 ```
 
-And add it when import `ConfigModule` (support file **.env**, **.yaml**):
+---
+
+## Supported File Types
+
+- `.env` (default, uses [godotenv](https://github.com/joho/godotenv))
+- `.yaml` / `.yml` (uses [gopkg.in/yaml.v3](https://pkg.go.dev/gopkg.in/yaml.v3))
+
+---
+
+## Advanced: Raw Loading
 
 ```go
-package app
-
-import (
-  "github.com/tinh-tinh/config/v2"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
-
-func Module() core.Module {
-  appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Modules{
-      config.ForRoot[Config](".env"),
-    },
-  })
-
-  return appModule
-}
+config.ForRootRaw(".env.example") // Load .env file globally (no struct)
 ```
 
-And use it in service:
+---
 
-```go
-package app
+## Error Handling & Validation
 
-import (
-  "github.com/tinh-tinh/config/v2"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
+- Returns errors when variables are missing, types are invalid, or validation fails.
+- Supports default values for missing environment variables.
 
-type AppName struct {
-  Name string
-}
+---
 
-func Service(module core.Module) core.Provider {
-  cfg := config.Inject[Config](module)
-  svc := module.NewProvider(core.ProviderOptions{
-    Name: "svc",
-    Value: &AppName{Name: cfg.NodeEnv}
-  })
+## Testing & Patterns
 
-  return svc
-}
-```
+See [`env_test.go`](https://github.com/tinh-tinh/config/blob/main/env_test.go) and [`namespace_test.go`](https://github.com/tinh-tinh/config/blob/main/namespace_test.go) for examples of real-world usage.
 
-Function `Inject` in package `config` will get data from env was config in `ForRoot` and auto assert type with struct pass in `Inject`.
+---
 
-## Custom value env with function
-
-You can use `Load` option to config value.
-
-```go
-package app
-
-type Database struct {
-  Host string
-  Port string
-}
-
-type Config struct {
-  Node string 
-  Database Database
-}
-
-func Load() *Config {
-  return &Config{
-    NodeEnv: os.Getenv("NODE_ENV"),
-    Database: Database{
-      Host: os.Getenv("DB_HOST"),
-      Port: os.Getenv("DB_PORT"),
-    },
-  }
-}
-
-func Module() core.Module {
-  appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Modules{
-      config.ForRoot[Config](config.Options[Config]{
-        EnvPath: ".env",
-        Load:    Load,
-      }),
-    },
-  })
-
-  return appModule
-}
-```
-
-## Specific Namespace For Config
-
-You can specific config value with namespace for each module, look like you have same config:
-
-```go
-type Config struct {
-  DBHost string
-  DBPort string
-  DBUser string
-  DBPass string
-  DBName string
-}
-```
-
-And you can use it in two module. Example in MysqlModule:
-
-
-```go
-func MySQLModule(module core.Module) core.Module {
-  mysql := module.New(core.NewModuleOptions{
-    Imports: []core.Modules{
-      config.ForFeature[Config]("mysql", func() *Config {
-        return &Config{
-          DBHost: os.Getenv("MYSQL_DBHOST"),
-          DBPort: os.Getenv("MYSQL_DBPORT"),
-          DBUser: os.Getenv("MYSQL_DBUSER"),
-          DBPass: os.Getenv("MYSQL_DBPASS"),
-          DBName: os.Getenv("MYSQL_DBNAME"),
-        }
-      }),
-    },
-  })
-
-  return mysql
-}
-```
-
-And in `MongoModule`:
-
-```go
-func MongoModule(module core.Module) core.Module {
-  mongo := module.New(core.NewModuleOptions{
-    Imports: []core.Modules{
-      config.ForFeature("mongo", func() *Config {
-        return &Config{
-          DBHost: os.Getenv("MONGO_DBHOST"),
-          DBPort: os.Getenv("MONGO_DBPORT"),
-          DBUser: os.Getenv("MONGO_DBUSER"),
-          DBPass: os.Getenv("MONGO_DBPASS"),
-          DBName: os.Getenv("MONGO_DBNAME"),
-        }
-      }),
-    },
-  })
-
-  return mongo
-}
-```
-
-So when use `Config`, you can specific namespace to get value like:
-
-```go
-func(module core.Module) core.Provider {
-	cfg := config.InjectNamespace[Config](module, "mongo")
-  // Something
-}
-```
-
-## Condition Module
-
-When some case, we need init module base on some key in env.
-
-```go
-package app
-
-import (
-  "github.com/joho/godotenv"
-  "github.com/tinh-tinh/config"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
-
-func Module() core.Module {
-  godotenv.Load(".env.example")
-  appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Modules{
-      config.RegisterWhen(userModule, "NODE_ENV"),
-    },
-  })
-
-  return appModule
-}
-```
-
-With this config, module `userModule` only init when `NODE_ENV` have value in file `.env`.
-
-In other case, you need use function to custom condition you can pass function like this:
-
-```go
-package app
-
-import (
-  "os"
-
-  "github.com/joho/godotenv"
-  "github.com/tinh-tinh/config"
-  "github.com/tinh-tinh/tinhtinh/v2/core"
-)
-
-func Module() core.Module {
-  godotenv.Load(".env.example")
-  appModule := core.NewModule(core.NewModuleOptions{
-    Imports: []core.Modules{
-      config.RegisterWhen(userModule, func() bool {
-        return os.Getenv("NODE_ENV") == "development"
-      }),
-    },
-  })
-
-  return appModule
-}
-```
+For more, see the [source code](https://github.com/tinh-tinh/config).

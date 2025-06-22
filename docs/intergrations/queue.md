@@ -3,89 +3,185 @@ title: 🛢 Queue
 sidebar_position: 6
 ---
 
-# Queue
+# Queue Module for Tinh Tinh
 
-Package support create queue for handle task with Redis.
+The Queue module provides a robust, Redis-based job queue for the Tinh Tinh framework, supporting job scheduling, rate limiting, retries, concurrency, delayed jobs, priorities, and more.
 
-## Install
+---
+
+## Features
+
+- **Redis-Based:** Robust persistence and distributed processing.
+- **Delayed Jobs:** Schedule jobs to run after a delay.
+- **Cron Scheduling:** Schedule and repeat jobs using cron patterns.
+- **Rate Limiting:** Control job processing rate.
+- **Retries:** Automatic retry on failure.
+- **Priority:** Job prioritization.
+- **Concurrency:** Multiple workers per queue.
+- **Pause/Resume:** Temporarily stop and resume job processing.
+- **Crash Recovery:** Recovers jobs after process crashes.
+- **Remove on Complete/Fail:** Clean up jobs after handling.
+
+---
+
+## Installation
 
 ```bash
 go get -u github.com/tinh-tinh/queue/v2
 ```
 
-## Usage
+---
 
-If using `queue` package, you need install Redis and connect it to run background tasks. Import queue in module:
+## Quick Start
+
+### 1. Register the Module
 
 ```go
-package user
+import "github.com/tinh-tinh/queue/v2"
 
-import (
-	"github.com/redis/go-redis/v9"
-	"github.com/tinh-tinh/mongoose/v2"
-	"github.com/tinh-tinh/queue/v2"
-	"github.com/tinh-tinh/tinhtinh/v2/core"
-)
-
-func NewModule(module core.Module) core.Module {
-  userModule := module.New(core.NewModuleOptions{
-    Imports: []core.Modules{
-      mongoose.ForFeature(
-        mongoose.NewModel[User]("users"),
-      ),
-      queue.Register("user_update", &queue.Options{
-        Connect: &redis.Options{
-          Addr:     "localhost:6379",
-          DB:       0,
-          Password: "",
-        },
-        Workers:       5,
-        RetryFailures: 3,
-      }),
+queueModule := queue.ForRoot(&queue.Options{
+    Connect: &redis.Options{
+        Addr: "localhost:6379",
+        DB:   0,
     },
-    Controllers: []core.Controllers{NewController},
-    Providers:   []core.Providers{NewService},
-  })
-
-  return userModule
-}
+    Workers: 3,
+    RetryFailures: 3,
+})
 ```
 
-Use in service:
+Or via factory:
 
 ```go
-const USER_SERVICE core.Provide = "USER_SERVICE"
-
-type userService struct {
-	q *queue.Queue
-}
-
-func NewService(module core.Module) core.Provider {
-	userQ := queue.Inject(module, "user_update")
-
-	userQ.Process(func(job *queue.Job) {
-		job.Process(func() error {
-			a, _ := bcrypt.GenerateFromPassword([]byte(job.Id), 14)
-			fmt.Println(a)
-			return nil
-		})
-	})
-
-	svc := module.NewProvider(core.ProviderOptions{
-		Name: USER_SERVICE,
-		Value: &userService{
-			q: userQ,
-		},
-	})
-
-	return svc
-}
-
-func (s *userService) Create(input interface{}) interface{} {
-	s.q.AddJob(queue.AddJobOptions{
-		Id:   "12345678",
-		Data: make(map[string]interface{}),
-	})
-	return nil
-}
+queueModule := queue.ForRootFactory(func(ref core.RefProvider) *queue.Options {
+    return &queue.Options{ /* ... */ }
+})
 ```
+
+### 2. Register and Inject Queues
+
+```go
+userQueueModule := queue.Register("user") // uses default/global options
+
+// In your service or controller:
+userQueue := queue.Inject(module, "user")
+```
+
+---
+
+## Example: Adding and Processing Jobs
+
+```go
+// Create a queue instance
+userQueue := queue.New("user", &queue.Options{
+    Connect: &redis.Options{
+        Addr: "localhost:6379",
+        DB:   0,
+    },
+    Workers: 3,
+    RetryFailures: 3,
+    Limiter: &queue.RateLimiter{
+        Max: 3,
+        Duration: time.Second,
+    },
+})
+
+// Define job processing logic
+userQueue.Process(func(job *queue.Job) {
+    job.Process(func() error {
+        // Your job logic here
+        fmt.Println("Processing job:", job.Id, job.Data)
+        return nil
+    })
+})
+
+// Add a job
+userQueue.AddJob(queue.AddJobOptions{
+    Id:   "1",
+    Data: "some data",
+})
+```
+
+---
+
+## Advanced Usage
+
+### Bulk Add Jobs
+
+```go
+userQueue.BulkAddJob([]queue.AddJobOptions{
+    {Id: "2", Data: "value 2"},
+    {Id: "3", Data: "value 3"},
+    // ...
+})
+```
+
+### Pause and Resume
+
+```go
+userQueue.Pause()
+userQueue.AddJob(queue.AddJobOptions{Id: "4", Data: "delayed"})
+userQueue.Resume()
+```
+
+### Scheduling (Cron)
+
+```go
+scheduledQueue := queue.New("scheduled", &queue.Options{
+    Connect: &redis.Options{Addr: "localhost:6379", DB: 0},
+    Pattern: "@every 1m", // every 1 minute
+    Workers: 1,
+})
+scheduledQueue.Process(func(job *queue.Job) {
+    job.Process(func() error {
+        // Job logic
+        return nil
+    })
+})
+scheduledQueue.AddJob(queue.AddJobOptions{Id: "1", Data: "scheduled data"})
+```
+
+### Delayed Jobs
+
+```go
+delayQueue := queue.New("delayed", &queue.Options{
+    Connect: &redis.Options{Addr: "localhost:6379", DB: 0},
+    Delay:   5 * time.Second,
+})
+delayQueue.Process(func(job *queue.Job) {
+    job.Process(func() error {
+        // Job logic
+        return nil
+    })
+})
+delayQueue.AddJob(queue.AddJobOptions{Id: "1", Data: "delayed data"})
+```
+
+### Remove on Complete or Fail
+
+```go
+queueWithCleanup := queue.New("clean", &queue.Options{
+    Connect: &redis.Options{Addr: "localhost:6379", DB: 0},
+    RemoveOnComplete: true,
+    RemoveOnFail:     true,
+})
+```
+
+---
+
+## Job Status & Counts
+
+```go
+completed := userQueue.CountJobs(queue.CompletedStatus)
+failed := userQueue.CountJobs(queue.FailedStatus)
+waiting := userQueue.CountJobs(queue.WaitStatus)
+```
+
+---
+
+## Crash Recovery
+
+Jobs are automatically recovered and re-processed after process crashes.
+
+---
+
+For advanced patterns and full API, see the [queue source code](https://github.com/tinh-tinh/queue).
