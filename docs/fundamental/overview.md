@@ -4,11 +4,9 @@ sidebar_position: 1
 
 # Overview
 
-![image](./img/overview.png)
-
-## What is Tinh Tinh?
-
 Tinh Tinh is a progressive Go framework designed to help developers build efficient, scalable, and enterprise-grade server-side applications. Its architecture is inspired by modern backend frameworks, providing a modular and extensible foundation with a strong focus on testability, maintainability, and developer productivity.
+
+![image](./img/overview.png)
 
 ### Core Principles
 

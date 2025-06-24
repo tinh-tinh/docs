@@ -4,9 +4,9 @@ sidebar_position: 4
 
 # Provider
 
-## What is a Provider?
-
 A **Provider** in Tinh Tinh is the core mechanism for dependency injection. Providers can represent values, structs, or factory functions. They are registered within modules and can be injected into controllers, other providers, or exported/imported across modules.
+
+![provider](./img/provider.png)
 
 ---
 

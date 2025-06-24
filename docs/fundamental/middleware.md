@@ -4,109 +4,129 @@ sidebar_position: 5
 
 # Middleware
 
-A function for handle between request comming to controller.
+Tinh Tinh middleware lets you run logic before your route handlers, at the controller or module level, or selectively with Consumers.
 
 ![middleware](./img/middleware.png)
 
-A middleware is a function called before handler. A syntax to create middleware:
+---
+
+## Summary of Features
+
+- Allow custom middleware: You can create your own middleware functions to process requests and responses.
+- Allow registering middleware for a single route: Attach middleware directly to individual controller routes.
+- Allow registering middleware for multiple routes in a controller: Apply middleware to all routes in a controller at once.
+- Allow registering middleware for all controllers in a module: Apply middleware globally within a module via configuration.
+- Allow conditional middleware with Consumer: Apply middleware to selected routes (include/exclude) using Consumer on the module instance.
+- Support middleware with dependency injection: Middleware can access providers/services using MiddlewareRef.
+
+---
+
+## 1. Define Middleware
+
+A middleware is a function:
 
 ```go
-package app
-
-func Middleware(ctx core.Ctx) error {
-  // Something
-  return ctx.Next()
+func MyMiddleware(ctx core.Ctx) error {
+    // your logic
+    return ctx.Next() // call next middleware/handler
 }
 ```
 
-Use middleware in controller:
+---
+
+## 2. Add Middleware to a Controller Route
+
+Attach to one route only:
 
 ```go
-package app
+ctrl := module.NewController("user")
+ctrl.Use(MyMiddleware).Get("/profile", func(ctx core.Ctx) error {
+    return ctx.JSON(core.Map{"msg": "with middleware"})
+})
+```
 
-import "github.com/tinh-tinh/tinhtinh/v2/core"
+---
 
-func Controller(module core.Module) core.Controller {
-  ctrl := module.NewController("test")
-  
-  ctrl.Use(Middleware).Get("", func(ctx core.Ctx) error {
-    return ctx.JSON(core.Map{
-      "data": "ok",
-    })
-  })
-    
-  return ctrl
+## 3. Add Middleware for Multiple Routes in Controller
+
+Apply to all routes in the controller:
+
+```go
+ctrl := module.NewController("admin").
+    Use(MyMiddleware).
+    Registry()
+
+ctrl.Get("/stats", handlerA)
+ctrl.Get("/logs", handlerB)
+```
+
+---
+
+## 4. Middleware for Module
+
+Apply to all controllers in a module:
+
+```go
+mod := module.New(core.NewModuleOptions{
+    Middlewares: []core.Middleware{MyMiddleware},
+})
+```
+
+---
+
+## 5. Use Consumer to Apply Middleware for Custom Routes in a Module
+
+You can use `Consumer` to selectively apply one or more middlewares to specific routes in your module tree, using include/exclude rules.  
+This is applied on the module instance (which can be used as the app root).
+
+### Example
+
+```go
+app := core.NewModule(core.NewModuleOptions{
+    Imports: []core.Modules{userModule, postModule},
+})
+
+// Apply tenantMiddleware to all routes
+app.Consumer(core.NewConsumer().Apply(tenantMiddleware).Include(core.RoutesPath{
+    Path: "*", Method: core.MethodAll,
+}))
+
+// Apply locationMiddleware to all routes except /post/exclude
+app.Consumer(core.NewConsumer().Apply(locationMiddleware).Exclude(core.RoutesPath{
+    Path: "/post/exclude", Method: core.MethodAll,
+}))
+```
+
+- `Include()` specifies which routes and methods get the middleware.  
+  Use `Path: "*"` or `Method: core.MethodAll` for wildcards (all paths or all methods).
+- `Exclude()` removes routes from the effect.
+- If no includes are set, the middleware applies to all routes by default.
+
+---
+
+## 6. MiddlewareRef: Access Providers in Middleware
+
+If your middleware needs to access a service/provider:
+
+```go
+func AuthMiddleware(ref core.RefProvider, ctx core.Ctx) error {
+    auth := ref.Ref("AuthService")
+    // use auth here
+    return ctx.Next()
 }
+
+// Attach to controller
+ctrl.UseRef(AuthMiddleware).Get("/secure", handler)
 ```
 
-Use middleware for all route in controller:
+Or apply to module:
 
 ```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
-func Controller(module core.Module) core.Controller {
-  ctrl := module.NewController("test").Use(Middleware).Registry()
-    
-  ctrl.Get("", func(ctx core.Ctx) error {
-    return ctx.JSON(core.Map{
-	    "data": "ok",
-	  })
-  })
-    
-  return ctrl
-}
+mod := module.New(core.NewModuleOptions{
+    MiddlewaresRef: []core.MiddlewareRef{AuthMiddleware},
+})
 ```
 
-Use middleware for module:
+---
 
-```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
-func Module(module core.Module) core.Module {
-  mod := module.New(core.NewModuleOptions{
-    Middlewares: []core.Middleware{Middleware}
-  })
-    
-  return mod
-}
-```
-
-## Use middleware with provider
-
-If you need get some provider of module in middleware, you can use `MiddlewareRef`, by create function like this:
-
-```go
-package app
-
-func MiddlewareRef(ref core.RefProvider, ctx core.Ctx) error {
-  prd := ref.Ref(Name)   // Name of provider in module
-  // Something
-  return ctx.Next()
-}
-```
-
-And use it:
-
-```go
-ctrl := module.NewController("test").UseRef(MiddlewareRef)
-```
-
-The middleware Ref cannot import in module. But you still use it with module like that:
-
-```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
-func Module(module core.Module) core.Module {
-  mod := module.New(core.NewModuleOptions{
-    // something
-  }).UseRef(MiddlewareRef)
-
-  return mod
-}
-```
+**For more, see the [Tinh Tinh middleware tests and examples](https://github.com/tinh-tinh/tinhtinh/search?q=middleware).**

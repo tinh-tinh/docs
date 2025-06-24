@@ -4,50 +4,77 @@ sidebar_position: 7
 
 # Guard
 
-A middleware responsible for managing access to the controller.
+Guards in Tinh Tinh help you control access to routes by defining logic that determines whether a request should be allowed to proceed.
 
 ![guard](./img/guard.png)
 
-A guard is a middleware used only to manage access in routes. It is a function that returns a boolean value: if true, the route can be handled; otherwise, the app will throw a 403 error. 
+---
 
-## Define a guard
+## Summary of Features
+
+- Allow custom guard: You can create your own guard functions to check conditions before handler execution.
+- Allow registering guard for a single route: Attach guards directly to individual controller routes.
+- Allow registering guard for multiple routes in a controller: Apply a guard to all routes of a controller at once.
+- Allow registering guard for all controllers in a module: Apply a guard globally within a module via configuration.
+- Support guards with dependency injection: Guards have access to providers/services via the RefProvider.
+
+---
+
+## 1. Define Guard
+
+A guard is a function that receives a service provider and the request context, and returns `(bool, error)`:
 
 ```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
-func QueryGuard(ref core.RefProvider, ctx core.Ctx) bool {
-  return ctx.Query("key") == "value"
-}
-
-func Controller(module core.Module) core.Controller {
-  ctrl := module.NewController("test")
-  
-  ctrl.Guard(QueryGuard).Get("", func (ctx core.Ctx) error {
-    return ctx.JSON(core.Map{
-      "data": "ok",
-    })
-  })
-  
-  return ctrl
+func MyGuard(ref core.RefProvider, ctx core.Ctx) (bool, error) {
+    // your logic, e.g. check user from ref
+    user := ref.Ref("UserService")
+    // evaluate auth or role
+    return true, nil // allow
 }
 ```
-- Module
+
+---
+
+## 2. Add Guard to a Controller Route
+
+Attach to one route only:
+
 ```go
-package app
+ctrl := module.NewController("user")
+ctrl.Guard(MyGuard).Get("/private", func(ctx core.Ctx) error {
+    return ctx.JSON(core.Map{"msg": "allowed"})
+})
+```
 
-import "github.com/tinh-tinh/tinhtinh/v2/core"
+---
 
-func QueryGuard(ref RefProvider, ctx Ctx) bool {
-  return ctx.Query("key") == "value"
-}
+## 3. Add Guard for Multiple Routes in Controller
 
-func Controller(module core.Module) core.Module {
-  mod := module.New(core.NewModuleOptions{
-    Guards: []core.Guard{QueryGuard},
-  })
-  
-  return mod
-}
+Apply to all routes in the controller:
+
+```go
+ctrl := module.NewController("admin").
+    Guard(MyGuard).
+    Registry()
+
+ctrl.Get("/dashboard", handlerA)
+ctrl.Get("/config", handlerB)
+```
+
+---
+
+## 4. Guard for Module
+
+Apply to all controllers in a module:
+
+```go
+mod := module.New(core.NewModuleOptions{
+    Guards: []core.Guard{MyGuard},
+})
+```
+
+---
+
+**For more, see the [Tinh Tinh guard tests and examples](https://github.com/tinh-tinh/tinhtinh/search?q=guard).**
+
 ```
