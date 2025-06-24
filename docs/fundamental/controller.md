@@ -4,11 +4,9 @@ sidebar_position: 3
 
 # Controller
 
-![controller](./img/controller.png)
-
-## What is a Controller?
-
 A **Controller** in Tinh Tinh defines a set of route handlers responsible for processing incoming HTTP requests, extracting and validating data, invoking business logic, and returning responses. Controllers are grouped within modules and serve as the main entry point for API logic.
+
+![controller](./img/controller.png)
 
 ---
 

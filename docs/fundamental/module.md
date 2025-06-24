@@ -4,11 +4,9 @@ sidebar_position: 2
 
 # Module
 
-![image](./img/module.png)
-
-## What is a Module?
-
 A **Module** in Tinh Tinh is a fundamental building block that encapsulates a cohesive set of controllers, providers (services), middleware, guards, and configuration. Modules enable you to organize your code into logical, reusable, and testable units, supporting both small and large-scale applications.
+
+![image](./img/module.png)
 
 Modules can be composed, imported, and exported, allowing for hierarchical and feature-based app architecture—similar to dependency injection systems in other modern frameworks.
 
