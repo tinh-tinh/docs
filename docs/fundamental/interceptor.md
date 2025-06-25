@@ -4,45 +4,67 @@ sidebar_position: 8
 
 # Interceptor
 
-A middleware responsible transform data after response
+An **interceptor** in Tinh Tinh is a middleware mechanism for **transforming or shaping response data** after your controller logic runs—but before the response is sent to the client. Interceptors allow you to enforce global response formats, clean up or mask fields, or benchmark response handling.
 
 ![interceptor](./img/interceptor.png)
 
-Interceptor is use for transform data after response in controller.
+## Using Generic Interceptor Helpers
+
+Tinh Tinh provides generic helpers like `core.MapInterceptor[T]`, allowing you to write type-safe, reusable, and composable response interceptors.
+
+### Example: Response Interceptor with `core.MapInterceptor`
+
+Define a transformation function for your response DTO:
 
 ```go
-func Transform(ctx core.Ctx) core.CallHandler {
-	fmt.Println("Before ...")
-	now := time.Now()
-	return func(data core.Map) core.Map {
-		res := make(core.Map)
-		for key, val := range data {
-			if val != nil {
-				res[key] = val
-			}
-		}
-		fmt.Printf("After ...%vns\n", time.Since(now).Nanoseconds())
-		return res
-	}
+type UserResponse struct {
+    Name  string `json:"name"`
+    Email string `json:"email"`
+    Age   int    `json:"age,omitempty"`
+}
+
+// Remove empty fields and print timing
+func CleanAndLog(ctx core.Ctx) core.CallHandler {
+    start := time.Now()
+    return func(data *UserResponse) *UserResponse {
+        if data.Age == 0 {
+            data.Age = -1 // Or omit from JSON with omitempty
+        }
+        fmt.Printf("Interceptor elapsed: %dns\n", time.Since(start).Nanoseconds())
+        return data
+    }
 }
 ```
 
-Use in controller:
+Apply the interceptor in your controller using generics:
 
 ```go
-ctrl := module.NewController("test")
-
-ctrl.Interceptor(Transform).Get("", func(ctx core.Ctx) error {
-  return ctx.JSON(core.Map{
-    "data":    "ok",
-    "total":   10,
-    "message": nil,
-  })
+ctrl.Interceptor(core.MapInterceptor[UserResponse]{Handler: CleanAndLog}).Get("/user", func(ctx core.Ctx) error {
+    // Some business logic
+    return ctx.JSON(&UserResponse{
+        Name:  "Alice",
+        Email: "alice@example.com",
+        // Age: 0 will be cleaned/modified by the interceptor
+    })
 })
 ```
 
-Data when response is will:
+- `core.MapInterceptor[UserResponse]{Handler: CleanAndLog}` is a generic struct instance that acts as an interceptor.
+- The transformed response is sent to the client.
 
-```json
-{"data":"ok","total":10}
-```
+## Other Interceptor Patterns
+
+You may combine interceptors for various needs:
+- Mask sensitive data
+- Benchmark or log responses
+- Standardize or reshape API output
+
+## Summary
+
+- **Generic interceptor helpers** (`core.MapInterceptor[T]{}`) provide type safety and concise syntax for handling and transforming response data.
+- Use interceptors to enforce API contracts, mask or transform output, and collect response metrics.
+- This approach is recommended for consistent and maintainable response shaping in Tinh Tinh.
+
+---
+
+For more on advanced response shaping and serialization, see [Serialization](../application/serialization.md).
