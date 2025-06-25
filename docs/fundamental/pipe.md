@@ -4,98 +4,71 @@ sidebar_position: 6
 
 # Pipe
 
-A middleware responsible for validating and transforming data before it reaches the controller.
+A **pipe** in Tinh Tinh is a middleware mechanism for **validating and transforming incoming request data** before it reaches your controller logic. Pipes ensure that all data passed to your handlers is type-safe, validated, and ready to use—reducing boilerplate and improving application reliability.
 
 ![pipe](./img/pipe.png)
 
-A pipe is a function that validates and transforms request data before the handler function. There are 3 types of pipes:
-- **Body**: Validates and transforms data from the request body
-- **Query**: Validates and transforms data from the request query
-- **Param**: Validates and transforms data from the request params
+## Using Generic Pipe Helpers
 
-## Body
+Tinh Tinh provides generic helpers like `core.BodyParser[P]`, `core.QueryParser[P]`, and `core.PathParser[P]`, allowing you to write type-safe, concise, and composable request parsing and validation logic.
+
+### Example: Body Pipe with `core.BodyParser`
+
+Define your DTO:
 
 ```go
-// Define DTO
-
 type SignUpDto struct {
-  Name     string `validate:"required"`
-  Email    string `validate:"required,isEmail"`
-  Password string `validate:"isStrongPassword"`
-  Age      int    `validate:"isInt"`
+    Name     string `validate:"required"`
+    Email    string `validate:"required,isEmail"`
+    Password string `validate:"isStrongPassword"`
+    Age      int    `validate:"isInt"`
 }
 ```
 
-Use in controller:
+Apply the body parser pipe in your controller using generics:
 
 ```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
-func Controller(module core.Module) core.Controller {
-  ctrl := module.NewController("test")
-  
-  ctrl.Pipe(core.Body(SignUpDto{})).Post("", func (ctx core.Ctx) error {
-    return ctx.JSON(core.Map{
-      "data": ctx.Body(),
-    })
-  })
-  
-  return ctrl
-}
+ctrl.Pipe(core.BodyParser[SignUpDto]{}).Post("/signup", func(ctx core.Ctx) error {
+    dto := ctx.Body().(*SignUpDto)
+    // dto is already validated and parsed
+    return ctx.JSON(core.Map{"data": dto})
+})
 ```
 
-## Query
-
-Define DTO for query:
+### Example: Query Pipe with `core.QueryParser`
 
 ```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
 type FilterDto struct {
-  Name  string `validate:"required" query:"name"`
-  Email string `validate:"required,isEmail" query:"email"`
-  Age   int    `validate:"isInt" query:"age"`
+    Name  string `validate:"required" query:"name"`
+    Email string `validate:"required,isEmail" query:"email"`
+    Age   int    `validate:"isInt" query:"age"`
 }
 
-func Controller(module core.Module) core.Controller {
-  ctrl := module.NewController("test")
-  
-  ctrl.Pipe(core.Query(FilterDto{})).Post("", func (ctx core.Ctx) error {
-    return ctx.JSON(core.Map{
-      "data": ctx.Queries(),
-    })
-  })
-  
-  return ctrl
-}
+ctrl.Pipe(core.QueryParser[FilterDto]{}).Get("/users", func(ctx core.Ctx) error {
+    dto := ctx.Queries().(*FilterDto)
+    return ctx.JSON(core.Map{"data": dto})
+})
 ```
 
-## Param
-
-Define DTO for param:
+### Example: Path Pipe with `core.PathParser`
 
 ```go
-package app
-
-import "github.com/tinh-tinh/tinhtinh/v2/core"
-
-type ParamDto struct {
-  ID int `validate:"required,isInt" param:"id"`
+type PathDto struct {
+    ID int `validate:"required,isInt" path:"id"`
 }
 
-func Controller(module core.Module) core.Controller {
-  ctrl := module.NewController("test")
-  
-  ctrl.Pipe(core.Param(ParamDto{})).Get("{id}", func (ctx core.Ctx) error {
-    return ctx.JSON(core.Map{
-      "data": ctx.Params(),
-    })
-  })
-  
-  return ctrl
-}
+ctrl.Pipe(core.PathParser[PathDto]{}).Get("/users/{id}", func(ctx core.Ctx) error {
+    dto := ctx.Paths().(*PathDto)
+    return ctx.JSON(core.Map{"data": dto})
+})
 ```
+
+## Summary
+
+- **Generic pipe helpers** (`core.BodyParser[P]{}`, `core.QueryParser[P]{}`, `core.PathParser[P]{}`) provide type safety and concise syntax for parsing and validating request data.
+- Access parsed data inside your handler using `ctx.Body()`, `ctx.Queries()`, or `ctx.Paths()`—always as a pointer to your DTO.
+- This approach is recommended for most use cases in Tinh Tinh.
+
+---
+
+For more on advanced serialization and validation, see [Serialization](../application/serialization.md) and [Validation](../fundamental/validation.md).
