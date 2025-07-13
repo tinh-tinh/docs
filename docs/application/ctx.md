@@ -215,10 +215,3 @@ func(ctx core.Ctx) error {
     })
 }
 ```
-
-## References
-
-- [Source: core/ctx.go](https://github.com/tinh-tinh/tinhtinh/blob/main/core/ctx.go)
-- [Tests: core/ctx_test.go](https://github.com/tinh-tinh/tinhtinh/blob/main/core/ctx_test.go)
-
----

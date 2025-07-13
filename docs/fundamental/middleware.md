@@ -126,7 +126,3 @@ mod := module.New(core.NewModuleOptions{
     MiddlewaresRef: []core.MiddlewareRef{AuthMiddleware},
 })
 ```
-
----
-
-**For more, see the [Tinh Tinh middleware tests and examples](https://github.com/tinh-tinh/tinhtinh/search?q=middleware).**

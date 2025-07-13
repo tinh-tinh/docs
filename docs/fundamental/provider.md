@@ -290,10 +290,3 @@ You can reference providers in controllers or other providers with:
 - Providers can be scoped as singleton (`Global`), per-request, or transient.
 - Providers can be exported/imported across modules.
 
----
-
-## References
-
-- [core/provider_test.go](https://github.com/tinh-tinh/tinhtinh/blob/main/core/provider_test.go)
-- [core/module_test.go](https://github.com/tinh-tinh/tinhtinh/blob/main/core/module_test.go)
-- [core/transient_test.go](https://github.com/tinh-tinh/tinhtinh/blob/main/core/transient_test.go)

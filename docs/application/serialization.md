@@ -14,9 +14,9 @@ If using Pipe in controller we can use some built-in function in ctx to get data
 
 | Functions | Description |
 |-|-|
-| ctx.Body() | Get data from requet body and parsing with `Body()` in Pipe |
-| ctx.Params() | Get data from requet param and parsing with `Param()` in Pipe |
-| ctx.Queries() | Get data from requet query and parsing with `Query()` in Pipe |
+| ctx.Body() | Get data from requet body and parsing with `BodyParser` in Pipe |
+| ctx.Paths() | Get data from requet param and parsing with `PathParser` in Pipe |
+| ctx.Queries() | Get data from requet query and parsing with `QueryParser` in Pipe |
 
 ## Use functions 
 
@@ -53,7 +53,7 @@ type QueryData struct {
 
 ctrl.Get("", func(ctx core.Ctx) error {
   var queryData QueryData
-  err := ctx.QueryParse(&queryData)
+  err := ctx.QueryParser(&queryData)
   if err != nil {
     return err
   }
@@ -75,7 +75,7 @@ type ParamData struct {
 
 ctrl.Get("{id}/{export}", func(ctx core.Ctx) error {
   var queryData ParamData
-  err := ctx.ParamParse(&queryData)
+  err := ctx.PathParser(&queryData)
   if err != nil {
     return err
   }
