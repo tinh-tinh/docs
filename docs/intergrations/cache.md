@@ -1,26 +1,36 @@
----
-title: ⚡Cache Manager
-sidebar_position: 5
----
+# Cache for Tinh Tinh
 
-# Cache Manager
+<div align="center">
+<img alt="GitHub Release" src="https://img.shields.io/github/v/release/tinh-tinh/cacher">
+<img alt="GitHub License" src="https://img.shields.io/github/license/tinh-tinh/cacher">
+<a href="https://codecov.io/gh/tinh-tinh/cacher" > 
+ <img src="https://codecov.io/gh/tinh-tinh/cacher/graph/badge.svg?token=5P267CM3SA"/> 
+ </a>
+<a href="https://pkg.go.dev/github.com/tinh-tinh/cacher"><img src="https://pkg.go.dev/badge/github.com/tinh-tinh/cacher.svg" alt="Go Reference"></a>
+</div>
+
+<div align="center">
+    <img src="https://avatars.githubusercontent.com/u/178628733?s=400&u=2a8230486a43595a03a6f9f204e54a0046ce0cc4&v=4" width="200" alt="Tinh Tinh Logo">
+</div>
+
+## Overview
 
 The Cache Manager provides a unified API to manage caching in Tinh Tinh applications. It supports memory, Memcache, and Redis backends, and can be flexibly configured and injected into your modules and controllers.
+
+## Features
+
+- 🔌 **Pluggable Backends:** Supports in-memory, Memcache, and Redis stores
+- 🛡️ **Type Safety:** Generic interface for strong typing
+- 🏷️ **Namespace Support:** Isolate cache by logical namespace
+- 📦 **Compression:** Optional data compression
+- 🌐 **Context-aware:** Supports context propagation for advanced use cases
+- 🎣 **Hooks:** Register hooks for cache lifecycle events
 
 ## Installation
 
 ```bash
 go get -u github.com/tinh-tinh/cacher/v2
 ```
-
-## Features
-
-- **Pluggable Backends:** Supports in-memory, Memcache, and Redis stores.
-- **Type Safety:** Generic interface for strong typing.
-- **Namespace Support:** Isolate cache by logical namespace.
-- **Compression:** Optional data compression.
-- **Context-aware:** Supports context propagation for advanced use cases.
-- **Hooks:** Register hooks for cache lifecycle events.
 
 ## Basic Usage
 
@@ -37,12 +47,9 @@ cache := cacher.NewSchema[string](cacher.Config{
 
 err := cache.Set("users", "John")
 data, err := cache.Get("users")
-// ...
 ```
 
 ### Using Namespaces
-
-You can create isolated caches using the `Namespace` field:
 
 ```go
 cache1 := cacher.NewSchema[string](cacher.Config{
@@ -86,12 +93,12 @@ cache := redis.New(redis.Options{
 
 The main cache interface provides:
 
-- `Set(key, value, opts...)`: Store a value.
-- `Get(key)`: Retrieve a value.
-- `Delete(key)`: Remove a value.
-- `Clear()`: Remove all values.
-- `MSet(...params)`: Batch set.
-- `MGet(...keys)`: Batch get.
+- `Set(key, value, opts...)`: Store a value
+- `Get(key)`: Retrieve a value
+- `Delete(key)`: Remove a value
+- `Clear()`: Remove all values
+- `MSet(...params)`: Batch set
+- `MGet(...keys)`: Batch get
 
 ## Module Integration
 
@@ -111,7 +118,6 @@ func userController(module core.Module) core.Controller {
         data, err := cache.Get("users")
         // handle data
     })
-    // ...
     return ctrl
 }
 ```
@@ -127,16 +133,52 @@ module := core.NewModule(core.NewModuleOptions{
 })
 ```
 
-## Advanced
+## Advanced Features
 
-- **Compression:** Set `CompressAlg` in `Config`.
-- **Hooks:** Use the `Hooks` field to register cache hooks.
-- **Context:** Use `SetCtx` and `GetCtx` for context operations.
+### Compression
+Set `CompressAlg` in `Config` to enable data compression:
+
+```go
+cache := cacher.NewSchema[string](cacher.Config{
+    Store: store,
+    CompressAlg: "gzip", // Enable compression
+})
+```
+
+### Hooks
+Use the `Hooks` field to register cache lifecycle hooks:
+
+```go
+cache := cacher.NewSchema[string](cacher.Config{
+    Store: store,
+    Hooks: []cacher.Hook{
+        // Add your hooks here
+    },
+})
+```
+
+### Context Operations
+Use `SetCtx` and `GetCtx` for context-aware operations:
+
+```go
+ctx := context.Background()
+err := cache.SetCtx(ctx, "key", value)
+data, err := cache.GetCtx(ctx, "key")
+```
 
 ## Testing
 
-The repository includes comprehensive tests for all stores and features. See `cacher_test.go` and `storage/memcache/memcache_test.go` for examples.
+The repository includes comprehensive tests for all stores and features. See:
+- `cacher_test.go`
+- `storage/memcache/memcache_test.go`
 
----
+## Contributing
 
-For further details, see the [cacher source code](https://github.com/tinh-tinh/cacher).
+We welcome contributions! Please feel free to submit a Pull Request.
+
+## Support
+
+If you encounter any issues or need help, you can:
+- Open an issue in the GitHub repository
+- Check our documentation
+- Join our community discussions
